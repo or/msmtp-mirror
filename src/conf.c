@@ -103,6 +103,8 @@ account_t *account_new(const char *conffile, const char *id)
     a->add_missing_date_header = 1;
     a->remove_bcc_headers = 1;
     a->source_ip = NULL;
+    a->keychain_name = NULL;
+    a->keychain_account = NULL;
     return a;
 }
 
@@ -189,6 +191,8 @@ account_t *account_copy(account_t *acc)
         a->add_missing_date_header = acc->add_missing_date_header;
         a->remove_bcc_headers = acc->remove_bcc_headers;
         a->source_ip = acc->source_ip ? xstrdup(acc->source_ip) : NULL;
+        a->keychain_name = acc->keychain_name ? xstrdup(acc->keychain_name) : NULL;
+        a->keychain_account = acc->keychain_account ? xstrdup(acc->keychain_account) : NULL;
     }
     return a;
 }
@@ -232,6 +236,8 @@ void account_free(void *a)
         free(p->aliases);
         free(p->proxy_host);
         free(p->source_ip);
+        free(p->keychain_name);
+        free(p->keychain_account);
         free(p);
     }
 }
@@ -720,6 +726,16 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         free(acc1->source_ip);
         acc1->source_ip = acc2->source_ip ? xstrdup(acc2->source_ip) : NULL;
+    }
+    if (acc2->mask & ACC_KEYCHAIN_NAME)
+    {
+        free(acc1->keychain_name);
+        acc1->keychain_name = acc2->keychain_name ? xstrdup(acc2->keychain_name) : NULL;
+    }
+    if (acc2->mask & ACC_KEYCHAIN_ACCOUNT)
+    {
+        free(acc1->keychain_account);
+        acc1->keychain_account = acc2->keychain_account ? xstrdup(acc2->keychain_account) : NULL;
     }
     acc1->mask |= acc2->mask;
 }
@@ -1840,6 +1856,18 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
         else if (strcmp(cmd, "tls_force_sslv3") == 0)
         {
             /* compatibility with versions <= 1.4.32: silently ignore */
+        }
+        else if (strcmp(cmd, "keychain_name") == 0)
+        {
+            acc->mask |= ACC_KEYCHAIN_NAME;
+            free(acc->keychain_name);
+            acc->keychain_name = (*arg == '\0') ? NULL : xstrdup(arg);
+        }
+        else if (strcmp(cmd, "keychain_account") == 0)
+        {
+            acc->mask |= ACC_KEYCHAIN_ACCOUNT;
+            free(acc->keychain_account);
+            acc->keychain_account = (*arg == '\0') ? NULL : xstrdup(arg);
         }
         else
         {

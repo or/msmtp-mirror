@@ -22,6 +22,10 @@
 #ifndef PASSWORD_H
 #define PASSWORD_H
 
+#define PASSWORD_EOK           0
+#define PASSWORD_EUNSUPPORTED  1
+#define PASSWORD_ENOTFOUND     2
+
 typedef enum {
     password_service_smtp,
     password_service_pop3
@@ -41,5 +45,21 @@ typedef enum {
  */
 char *password_get(const char *hostname, const char *user,
         password_service_t service, int getpass_only_via_tty);
+
+/*
+ * get_password_from_keychain()
+ *
+ * This function tries to get a password for the OSX Keychain, if
+ * support for it was included in the build. It stores the result
+ * in 'buf' (which is allocated).
+ * If it fails, it doesn't store a value and silently ignores the error,
+ * so other password retrieval strategies can be attempted.
+ * Returns PASSWORD_EUNSUPPORTED if OSX Keychain support is not available,
+ * PASSWORD_ENOTFOUND if the key item was not found in the keychain,
+ * otherwise PASSWORD_EOK.
+ * On error, *errstr will contain an error string.
+ */
+int get_password_from_keychain(const char *name, const char *account,
+        char **buf, char **errstr);
 
 #endif

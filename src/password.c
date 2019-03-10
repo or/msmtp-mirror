@@ -50,7 +50,6 @@
 #define USERNETRCFILE   ".netrc"
 #endif
 
-
 /*
  * password_get()
  *
@@ -219,4 +218,32 @@ char *password_get(const char *hostname, const char *user,
     }
 
     return password;
+}
+
+int get_password_from_keychain(const char *name, const char *account,
+        char **buf, char **errstr) {
+  *buf = NULL;
+#ifdef HAVE_MACOSXKEYCHAIN
+    void *password_data;
+    UInt32 password_length;
+    if (SecKeychainFindGenericPassword(
+                                       NULL,
+                                       strlen(name), name,
+                                       strlen(account), account,
+                                       &password_length, &password_data,
+                                       NULL) == noErr)
+    {
+        *buf = xmalloc((password_length + 1) * sizeof(char));
+        strncpy(*buf, password_data, (size_t)password_length);
+        (*buf)[password_length] = '\0';
+        SecKeychainItemFreeContent(NULL, password_data);
+        return PASSWORD_EOK;
+    }
+
+    *errstr = xasprintf(_("generic password for name '%s', account '%s' not found in OSX Keychain"), name, account);
+    return PASSWORD_ENOTFOUND;
+#else
+    *errstr = xasprintf(_("OSX Keychain support not enabled"));
+    return PASSWORD_EUNSUPPORTED;
+#endif /* HAVE_MACOSXKEYCHAIN */
 }

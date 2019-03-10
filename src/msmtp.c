@@ -3728,6 +3728,18 @@ int main(int argc, char *argv[])
 
     /* OK, we're using the settings in 'account'. Complete them and check
      * them. */
+    if (account->auth_mech && !account->password && account->keychain_name &&
+              account->keychain_account)
+    {
+        if (get_password_from_keychain(
+                              account->keychain_name, account->keychain_account,
+                              &account->password, &errstr) != PASSWORD_EOK)
+        {
+          print_error("%s", sanitize_string(errstr));
+          error_code = EX_CONFIG;
+          goto exit;
+        }
+    }
     if (account->auth_mech && !account->password && account->passwordeval)
     {
         if (get_password_eval(account->passwordeval,

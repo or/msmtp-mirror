@@ -80,6 +80,8 @@
 #define ACC_REMOVE_BCC_HEADERS          (1LL << 32LL)
 #define ACC_SOURCE_IP                   (1LL << 33LL)
 #define ACC_LOGFILE_TIME_FORMAT         (1LL << 34LL)
+#define ACC_KEYCHAIN_NAME               (1LL << 35LL)
+#define ACC_KEYCHAIN_ACCOUNT            (1LL << 36LL)
 
 typedef struct
 {
@@ -136,6 +138,10 @@ typedef struct
     int remove_bcc_headers;     /* remove the Bcc headers from the mail? */
     /* source ip binding */
     char *source_ip;            /* Source IP to bind the connection to */
+
+    /* OSX Keychain */
+    char *keychain_name;
+    char *keychain_account;
 } account_t;
 
 
