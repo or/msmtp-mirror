@@ -30,7 +30,7 @@
 #ifdef HAVE_LIBSECRET
 # include <libsecret/secret.h>
 #endif
-#ifdef HAVE_MACOSXKEYRING
+#ifdef HAVE_MACOSXKEYCHAIN
 # include <Security/Security.h>
 #endif
 
@@ -119,7 +119,7 @@ char *password_get(const char *hostname, const char *user,
     }
 #endif /* HAVE_LIBSECRET */
 
-#ifdef HAVE_MACOSXKEYRING
+#ifdef HAVE_MACOSXKEYCHAIN
     if (!password)
     {
         void *password_data;
@@ -142,7 +142,7 @@ char *password_get(const char *hostname, const char *user,
             SecKeychainItemFreeContent(NULL, password_data);
         }
     }
-#endif /* HAVE_MACOSXKEYRING */
+#endif /* HAVE_MACOSXKEYCHAIN */
 
     if (!password)
     {

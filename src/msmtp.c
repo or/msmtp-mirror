@@ -1595,7 +1595,7 @@ int msmtp_configure(const char *address, const char *conffile)
     tmpstr = xasprintf("secret-tool store --label=msmtp host %s service smtp user %s", hostname, local_part);
     printf("# - %s\n#   %s\n", _("add your password to the key ring:"), tmpstr);
     free(tmpstr);
-#elif defined HAVE_MACOSXKEYRING
+#elif defined HAVE_MACOSXKEYCHAIN
     tmpstr = xasprintf("security add-internet-password -s %s -r smtp -a %s -w", hostname, local_part);
     printf("# - %s\n#   %s\n", _("add your password to the key ring:"), tmpstr);
     free(tmpstr);
@@ -1611,7 +1611,7 @@ int msmtp_configure(const char *address, const char *conffile)
     printf("tls_starttls %s\n", starttls ? "on" : "off");
     printf("auth on\n");
     printf("user %s\n", local_part);
-#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING
+#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYCHAIN
     printf("passwordeval gpg --no-tty -q -d ~/.msmtp-password.gpg\n");
 #endif
     printf("from %s\n", address);
@@ -2086,16 +2086,18 @@ void msmtp_print_version(void)
     printf(_("disabled"));
 #endif
     printf("\n");
-    printf(_("Keyring support: "));
-#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING
-    printf(_("none"));
+    printf(_("Gnome Keyring support: "));
+#ifdef HAVE_LIBSECRET
+    printf(_("enabled"));
 #else
-# ifdef HAVE_LIBSECRET
-    printf(_("Gnome "));
-# endif
-# ifdef HAVE_MACOSXKEYRING
-    printf(_("MacOS "));
-# endif
+    printf(_("disabled"));
+#endif
+    printf("\n");
+    printf(_("OSX Keychain support: "));
+#ifdef HAVE_MACOSXKEYCHAIN
+    printf(_("enabled"));
+#else
+    printf(_("disabled"));
 #endif
     printf("\n");
     sysconfdir = get_sysconfdir();

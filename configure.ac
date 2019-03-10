@@ -295,10 +295,10 @@ if test "$libsecret" != "no"; then
 fi
 
 dnl MacOS X Keychain Services (Security Framework)
-AC_ARG_WITH([macosx-keyring], [AS_HELP_STRING([--with-macosx-keyring],
-	[Support Mac OS X Keyring])],
-    [macosx_keyring=$withval],[macosx_keyring=yes])
-if test "$macosx_keyring" != "no"; then
+AC_ARG_WITH([macosx-keychain], [AS_HELP_STRING([--with-macosx-keychain],
+	[Support Mac OS X Keychain])],
+    [macosx_keychain=$withval],[macosx_keychain=yes])
+if test "$macosx_keychain" != "no"; then
     AC_CACHE_CHECK([for SecKeychainGetVersion],
 	ac_cv_func_SecKeychainGetVersion,
 	[ac_save_LIBS="$LIBS"
@@ -309,12 +309,12 @@ if test "$macosx_keyring" != "no"; then
 	    [ac_cv_func_SecKeychainGetVersion=no])
 	 LIBS="$ac_save_LIBS"])
     if test $ac_cv_func_SecKeychainGetVersion = yes; then
-	macosx_keyring=yes
-	AC_DEFINE([HAVE_MACOSXKEYRING], [1],
+	macosx_keychain=yes
+	AC_DEFINE([HAVE_MACOSXKEYCHAIN], [1],
 	    [Define to 1 if you have the MacOS X Keychain Services API.])
 	LIBS="$LIBS -Wl,-framework -Wl,Security"
     else
-	macosx_keyring=no
+	macosx_keychain=no
     fi
 fi
 
@@ -348,5 +348,5 @@ else
 fi
 echo "GNU SASL support ....... : $libgsasl (most likely unnecessary)"
 echo "Libsecret support (GNOME): $libsecret"
-echo "MacOS X Keychain support : $macosx_keyring"
+echo "MacOS X Keychain support : $macosx_keychain"
 echo "Build msmtpd ............: $build_msmtpd"
