@@ -1,0 +1,15 @@
+* NOTE
+This copy is far behind the latest msmtp and I won't update it anymore. 
+I used to have a single generic password for my email in macOS Keychain, which
+required this change. However, msmtp has a built-in mechanism to look for the
+SMTP password in the Keychain for the given host and user.
+So I now simply maintain two entries, even if it means a little more effort when
+they change:
+#+begin_src
+> security add-internet-password -r smtp -s <host> -a <user> -w
+(prompts for password)
+> security add-internet-password -r imap -s <host> -a <user> -w
+(prompts for password)
+#+end_src
+
+*I strongly recommend using that approach and using the latest msmtp instead of this patch.*
